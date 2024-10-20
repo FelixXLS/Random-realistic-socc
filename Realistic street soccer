@@ -1,0 +1,125 @@
+local Library = loadstring(Game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
+
+local PhantomForcesWindow = Library:NewWindow("FelixX  realistic street soccer")
+
+local KillingCheats = PhantomForcesWindow:NewSection("No cooldown")
+
+KillingCheats:CreateButton("Any dribble⛹️", function()
+
+local args = {
+    [1] = "Deke"
+}
+
+game:GetService("ReplicatedStorage").Remotes.Action:FireServer(unpack(args))
+end)
+
+KillingCheats:CreateButton("BicycleKick🦵🚲", function()
+
+local args = {
+    [1] = "BicycleKick"
+}
+
+game:GetService("ReplicatedStorage").Remotes.Action:FireServer(unpack(args))
+end)
+
+KillingCheats:CreateButton("Header🗣️", function()
+
+local args = {
+    [1] = "Header"
+}
+
+game:GetService("ReplicatedStorage").Remotes.Action:FireServer(unpack(args))
+end)
+
+local KillingCheats = PhantomForcesWindow:NewSection("Automatic")
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Remotes = ReplicatedStorage:WaitForChild("Remotes")
+local CollectRemote = Remotes:WaitForChild("Collect")
+
+local numberToSend = 0 -- Inicializar la variable para almacenar el número ingresado
+local isAutoEzActive = false -- Variable para controlar el estado del toggle
+
+-- Crear un cuadro de texto para ingresar el número
+KillingCheats:CreateTextbox("Reach ball ⚽", function(text)
+    -- Intentar convertir el texto a número
+    local number = tonumber(text)
+    if number then
+        numberToSend = number -- Si es un número válido, guardarlo en la variable
+        print("Número establecido:", numberToSend)
+    else
+        print("Por favor, ingresa un número válido.")
+    end
+end)
+
+-- Crear un toggle para "Auto Ez"
+KillingCheats:CreateToggle("Auto reach ball⚽", function(value)
+    isAutoEzActive = value -- Actualizar el estado del toggle
+
+    if value then
+        -- Si el toggle está activado, ejecutar un ciclo
+        while isAutoEzActive do
+            wait(0) -- Esperar un segundo (ajustable)
+            
+            -- Enviar el número ingresado
+            CollectRemote:FireServer(numberToSend)
+            print("Enviado número:", numberToSend)
+        end
+    end
+end)
+
+local tspeed = 0
+local minSpeed = 0
+local maxSpeed = 100
+local hb = game:GetService("RunService").Heartbeat
+local tpwalking = true
+local player = game:GetService("Players")
+local lplr = player.LocalPlayer
+local hum
+
+local function isNumber(str)
+    return tonumber(str) ~= nil or str == 'inf'
+end
+
+local function adjustSpeed(newSpeed)
+    if isNumber(newSpeed) then
+        local speedValue = tonumber(newSpeed)
+        if speedValue < minSpeed then
+            tspeed = minSpeed
+        elseif speedValue > maxSpeed then
+            tspeed = maxSpeed
+        else
+            tspeed = speedValue
+        end
+    end
+end
+
+local function setupCharacter()
+    local chr = lplr.Character or lplr.CharacterAdded:Wait()
+    hum = chr:WaitForChild("Humanoid")
+
+    -- Reemplazo de input field por KillingCheats:CreateTextbox
+    KillingCheats:CreateTextbox("Speed", function(text)
+        adjustSpeed(text)
+    end)
+
+    -- Bucle de movimiento
+    spawn(function() -- Usar spawn para permitir que el bucle funcione en paralelo
+        while tpwalking and hb:Wait() and chr and hum and hum.Parent do
+            if hum.MoveDirection.Magnitude > 0 then
+                local adjustedSpeed = tspeed * 0.2  -- Aumenta el multiplicador para velocidad mínima
+                chr:TranslateBy(hum.MoveDirection * adjustedSpeed)
+            end
+        end
+    end)
+end
+
+-- Configurar el personaje al iniciar
+setupCharacter()
+
+-- Conectar la función al evento CharacterAdded
+lplr.CharacterAdded:Connect(function()
+    -- Esperar que el nuevo personaje se configure antes de ejecutar
+    wait(0.5)  -- Espera un breve momento para asegurar que el personaje se cargue
+    setupCharacter()
+end)
