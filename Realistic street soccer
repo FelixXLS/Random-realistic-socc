@@ -33,41 +33,6 @@ end)
 
 local KillingCheats = PhantomForcesWindow:NewSection("Automatic")
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Remotes = ReplicatedStorage:WaitForChild("Remotes")
-local CollectRemote = Remotes:WaitForChild("Collect")
-
-local numberToSend = 0 -- Inicializar la variable para almacenar el número ingresado
-local isAutoEzActive = false -- Variable para controlar el estado del toggle
-
--- Crear un cuadro de texto para ingresar el número
-KillingCheats:CreateTextbox("Reach ball ⚽", function(text)
-    -- Intentar convertir el texto a número
-    local number = tonumber(text)
-    if number then
-        numberToSend = number -- Si es un número válido, guardarlo en la variable
-        print("Número establecido:", numberToSend)
-    else
-        print("Por favor, ingresa un número válido.")
-    end
-end)
-
--- Crear un toggle para "Auto Ez"
-KillingCheats:CreateToggle("Auto reach ball⚽", function(value)
-    isAutoEzActive = value -- Actualizar el estado del toggle
-
-    if value then
-        -- Si el toggle está activado, ejecutar un ciclo
-        while isAutoEzActive do
-            wait(0) -- Esperar un segundo (ajustable)
-            
-            -- Enviar el número ingresado
-            CollectRemote:FireServer(numberToSend)
-            print("Enviado número:", numberToSend)
-        end
-    end
-end)
-
 local tspeed = 0
 local minSpeed = 0
 local maxSpeed = 100
